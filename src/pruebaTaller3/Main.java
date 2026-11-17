@@ -1,6 +1,6 @@
 package pruebaTaller3;
 
-// Millaray Zepeda - 21.000.000-K - ICCI
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
