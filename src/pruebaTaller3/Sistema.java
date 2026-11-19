@@ -240,14 +240,12 @@ public class Sistema {
                 boolean cambiar = false;
                 if (j2.getPuntajeMaximo() > j1.getPuntajeMaximo()) {
                     cambiar = true;
-                } else {
-                    if (j2.getPuntajeMaximo() == j1.getPuntajeMaximo()) {
-                        if (j2.getNombre().compareToIgnoreCase(j1.getNombre()) < 0) {
-                            cambiar = true;
-                        }
+                } else if (j2.getPuntajeMaximo() == j1.getPuntajeMaximo()) {
+                    if (j2.getNombre().compareToIgnoreCase(j1.getNombre()) < 0) {
+                        cambiar = true;
                     }
                 }
-
+                
                 if (cambiar) {
                     listaJugadores.set(j, j2);
                     listaJugadores.set(j + 1, j1);
