@@ -1,6 +1,6 @@
 package pruebaTaller3;
 
-// Clase para representar a cada usuario registrado con su puntaje máximo
+// Guarda el nombre y el mejor puntaje de cada jugador
 public class Jugador {
     private String nombre;
     private int puntajeMaximo;
@@ -10,15 +10,15 @@ public class Jugador {
         this.puntajeMaximo = puntajeMaximo;
     }
 
-    public String getNombre() { 
-        return nombre; 
+    public String getNombre() {
+        return nombre;
     }
-    
-    public int getPuntajeMaximo() { 
-        return puntajeMaximo; 
+
+    public int getPuntajeMaximo() {
+        return puntajeMaximo;
     }
-    
-    public void setPuntajeMaximo(int puntajeMaximo) { 
-        this.puntajeMaximo = puntajeMaximo; 
+
+    public void setPuntajeMaximo(int puntajeMaximo) {
+        this.puntajeMaximo = puntajeMaximo;
     }
 }

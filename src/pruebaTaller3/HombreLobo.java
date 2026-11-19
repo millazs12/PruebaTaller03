@@ -1,6 +1,6 @@
 package pruebaTaller3;
 
-// Subclase HombreLobo que hereda de Monstruo e implementa Mordedor y Furioso
+// Subclase HombreLobo con habilidad de morder y enfurecerse
 public class HombreLobo extends Monstruo implements Mordedor, Furioso {
     private int ferocidad;
     private int faseLunar;
@@ -12,13 +12,13 @@ public class HombreLobo extends Monstruo implements Mordedor, Furioso {
     }
 
     @Override
-    public String morder() { 
-        return "¡El hombre lobo da un mordisco salvaje!"; 
+    public String morder() {
+        return "¡El hombre lobo da un mordisco salvaje!";
     }
 
     @Override
-    public String enfurecerse() { 
-        return "¡El hombre lobo aúlla a la luna y entra en frenesí!"; 
+    public String enfurecerse() {
+        return "¡El hombre lobo aulla a la luna y entra en frenesi!";
     }
 
     @Override

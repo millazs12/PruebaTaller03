@@ -3,18 +3,18 @@ package pruebaTaller3;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-// Clase Sistema encargada de toda la lógica de negocio, manejo de listas y validaciones
+// Clase con la logica del juego, validaciones y manejo de listas
 public class Sistema {
-    private ArrayList<Monstruo> catalogoMonstruos; // Guarda todos los monstruos leídos del archivo
-    private ArrayList<Jugador> listaJugadores;     // Guarda los jugadores leídos de los registros
-    private Jugador jugadorActual;                 // Almacena el jugador que inició sesión actualmente
-    
-    private boolean[] minijuegosJugados;           // Controla cuáles de los 4 minijuegos ya se jugaron
-    private int[] puntajesMinijuegos;              // Guarda los puntajes obtenidos en cada minijuego de la sesión
-    private LinkedList<HistorialItem> historialSesion; // Historial ordenado con LinkedList
-    private int puntajeAcumuladoSesion;            // Suma total de puntos en la sesión actual
+    private ArrayList<Monstruo> catalogoMonstruos;
+    private ArrayList<Jugador> listaJugadores;
+    private Jugador jugadorActual;
 
-    // Constructor para inicializar las estructuras de datos
+    private boolean[] minijuegosJugados;
+    private int[] puntajesMinijuegos;
+    private LinkedList<HistorialItem> historialSesion;
+    private int puntajeAcumuladoSesion;
+
+    // Inicializa las listas y variables de control
     public Sistema() {
         this.catalogoMonstruos = new ArrayList<>();
         this.listaJugadores = new ArrayList<>();
@@ -24,7 +24,32 @@ public class Sistema {
         this.puntajeAcumuladoSesion = 0;
     }
 
-    // Método para validar e instanciar un monstruo a partir de las líneas del archivo
+    // Revisa letra por letra si el texto tiene ';'
+    private boolean tienePuntoYComa(String texto) {
+        for (int i = 0; i < texto.length(); i++) {
+            String letra = texto.substring(i, i + 1);
+            if (letra.equals(";")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Revisa si el texto esta vacio o solo tiene espacios
+    private boolean esSoloEspacios(String texto) {
+        if (texto.length() == 0) {
+            return true;
+        }
+        for (int i = 0; i < texto.length(); i++) {
+            String letra = texto.substring(i, i + 1);
+            if (!letra.equals(" ")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Valida una linea de Monstruos.txt y agrega el monstruo si todo esta bien
     public boolean agregarMonstruo(String[] partes) {
         try {
             String tipo = partes[0];
@@ -33,13 +58,13 @@ public class Sistema {
             int fue = Integer.parseInt(partes[3]);
             int res = Integer.parseInt(partes[4]);
 
-            // Validar que los atributos base estén dentro de sus rangos permitidos
+            // Revisa rangos de atributos base
             if (vida < 1 || vida > 200 || vel < 1 || vel > 100 || fue < 1 || fue > 100 || res < 1 || res > 100) {
                 return false;
             }
 
             Monstruo m = null;
-            // Validar creación según el tipo de monstruo y cantidad exacta de parámetros
+            // Revisa cantidad de datos y rangos propios segun el tipo
             if (tipo.equals("Zombi") && partes.length == 6) {
                 int mordida = Integer.parseInt(partes[5]);
                 if (mordida >= 1 && mordida <= 100) {
@@ -76,93 +101,98 @@ public class Sistema {
             }
             return false;
         } catch (Exception e) {
-            return false; // Retorna falso si ocurre cualquier error de conversión numérica
+            return false;
         }
     }
 
-    // Método para agregar un jugador desde el archivo de registros
+    // Agrega un jugador valido leido desde Registros.txt
     public boolean agregarJugadorRegistro(String nombre, int puntaje) {
-        if (nombre == null || nombre.trim().isEmpty() || nombre.contains(";") || puntaje < 0) {
+        if (nombre == null || esSoloEspacios(nombre) || puntaje < 0) {
+            return false;
+        }
+        if (tienePuntoYComa(nombre)) {
             return false;
         }
         listaJugadores.add(new Jugador(nombre, puntaje));
         return true;
     }
 
-    // Método que gestiona el inicio de sesión del usuario
+    // Inicia sesion (-1 si nombre no sirve, 1 si es nuevo, 2 si ya existia)
     public int iniciarSesion(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty() || nombre.contains(";")) {
-            return -1; // Nombre inválido según los requisitos
+        if (nombre == null || esSoloEspacios(nombre)) {
+            return -1;
         }
-        
+        if (tienePuntoYComa(nombre)) {
+            return -1;
+        }
+
         jugadorActual = null;
         for (int i = 0; i < listaJugadores.size(); i++) {
             if (listaJugadores.get(i).getNombre().equalsIgnoreCase(nombre)) {
                 jugadorActual = listaJugadores.get(i);
             }
         }
-        
-        int estado = 1; // 1 significa jugador nuevo
+
+        int estado = 1;
         if (jugadorActual == null) {
             jugadorActual = new Jugador(nombre, 0);
         } else {
-            estado = 2; // 2 significa jugador ya existente en los registros
+            estado = 2;
         }
-        
-        // Reiniciar variables de la sesión de juego actual
+
+        // Limpia datos de la sesion anterior y deja todos los monstruos libres
         minijuegosJugados = new boolean[4];
         puntajesMinijuegos = new int[4];
         historialSesion.clear();
         puntajeAcumuladoSesion = 0;
-        
-        // Dejar todos los monstruos disponibles nuevamente
+
         for (int i = 0; i < catalogoMonstruos.size(); i++) {
             catalogoMonstruos.get(i).setUsado(false);
         }
         return estado;
     }
 
-    public Jugador getJugadorActual() { 
-        return jugadorActual; 
-    }
-    
-    public ArrayList<Monstruo> getCatalogoMonstruos() { 
-        return catalogoMonstruos; 
-    }
-    
-    public boolean[] getMinijuegosJugados() { 
-        return minijuegosJugados; 
-    }
-    
-    public int[] getPuntajesMinijuegos() { 
-        return puntajesMinijuegos; 
+    public Jugador getJugadorActual() {
+        return jugadorActual;
     }
 
-    // Método para calcular el puntaje de un minijuego aplicando la habilidad y multiplicador
+    public ArrayList<Monstruo> getCatalogoMonstruos() {
+        return catalogoMonstruos;
+    }
+
+    public boolean[] getMinijuegosJugados() {
+        return minijuegosJugados;
+    }
+
+    public int[] getPuntajesMinijuegos() {
+        return puntajesMinijuegos;
+    }
+
+    // Calcula el puntaje final con multiplicador y guarda en historial y sesion
     public int calcularYRegistrarPuntaje(int indexMinijuego, Monstruo monstruo, String habilidadUsada, String habilidadPremiada, String nombreMinijuego, double potencial) {
         double multiplicador = 1.0;
         if (habilidadUsada.equals(habilidadPremiada)) {
-            multiplicador = 1.5; // Multiplicador de bonificación si la habilidad coincide
+            multiplicador = 1.5;
         }
-        
+
         int puntaje = (int) Math.round(potencial * 10.0 * multiplicador);
         minijuegosJugados[indexMinijuego] = true;
         puntajesMinijuegos[indexMinijuego] = puntaje;
-        monstruo.setUsado(true); // El monstruo queda marcado como usado en esta sesión
-        puntajeAcumuladoSesion += puntaje;
+        monstruo.setUsado(true);
+        puntajeAcumuladoSesion = puntajeAcumuladoSesion + puntaje;
         historialSesion.add(new HistorialItem(nombreMinijuego, monstruo.getTipo(), habilidadUsada, puntaje));
         return puntaje;
     }
 
-    public int getPuntajeAcumuladoSesion() { 
-        return puntajeAcumuladoSesion; 
-    }
-    
-    public LinkedList<HistorialItem> getHistorialSesion() { 
-        return historialSesion; 
+    public int getPuntajeAcumuladoSesion() {
+        return puntajeAcumuladoSesion;
     }
 
-    // Verifica si el usuario ha jugado al menos un minijuego en la sesión
+    public LinkedList<HistorialItem> getHistorialSesion() {
+        return historialSesion;
+    }
+
+    // Revisa si se jugo al menos un minijuego en la sesion
     public boolean haJugadoAlMenosUno() {
         for (int i = 0; i < minijuegosJugados.length; i++) {
             if (minijuegosJugados[i]) {
@@ -172,41 +202,41 @@ public class Sistema {
         return false;
     }
 
-    // Método que evalúa el término de sesión y actualiza récords si corresponde
+    // Actualiza record si corresponde y retorna mensaje al cerrar sesion
     public String finalizarSesion() {
         if (!haJugadoAlMenosUno()) {
-            return "No jugaste ningún minijuego, no se guardó registro.";
+            return "No jugaste ningun minijuego, no se guardo registro.";
         }
-        
+
         boolean existeEnLista = false;
         for (int i = 0; i < listaJugadores.size(); i++) {
             if (listaJugadores.get(i) == jugadorActual) {
                 existeEnLista = true;
             }
         }
-        
+
         if (!existeEnLista) {
             jugadorActual.setPuntajeMaximo(puntajeAcumuladoSesion);
             listaJugadores.add(jugadorActual);
-            return "Sesión terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos.\n¡Nuevo registro guardado!";
+            return "Sesion terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos.";
         } else {
             int recordAnterior = jugadorActual.getPuntajeMaximo();
             if (puntajeAcumuladoSesion > recordAnterior) {
                 jugadorActual.setPuntajeMaximo(puntajeAcumuladoSesion);
-                return "Sesión terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos.\n¡Felicidades, superaste tu récord anterior (" + recordAnterior + ")!";
+                return "Sesion terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos. ¡Superaste tu record anterior (" + recordAnterior + ")!";
             } else {
-                return "Sesión terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos.\nNo superaste tu récord (" + recordAnterior + "). ¡Suerte para la próxima!";
+                return "Sesion terminada. Puntaje total: " + puntajeAcumuladoSesion + " puntos. No superaste tu record (" + recordAnterior + ").";
             }
         }
     }
 
-    // Algoritmo de ordenamiento manual para el ranking (R7) de mayor a menor puntaje y alfabético por nombre
+    // Ordena el ranking de mayor a menor puntaje y por nombre si empatan
     public void ordenarRanking() {
         for (int i = 0; i < listaJugadores.size() - 1; i++) {
             for (int j = 0; j < listaJugadores.size() - i - 1; j++) {
                 Jugador j1 = listaJugadores.get(j);
                 Jugador j2 = listaJugadores.get(j + 1);
-                
+
                 boolean cambiar = false;
                 if (j2.getPuntajeMaximo() > j1.getPuntajeMaximo()) {
                     cambiar = true;
@@ -217,7 +247,7 @@ public class Sistema {
                         }
                     }
                 }
-                
+
                 if (cambiar) {
                     listaJugadores.set(j, j2);
                     listaJugadores.set(j + 1, j1);

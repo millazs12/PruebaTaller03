@@ -1,6 +1,6 @@
 package pruebaTaller3;
 
-// Subclase Vampiro que hereda de Monstruo e implementa Mordedor y Volador
+// Subclase Vampiro con habilidad de morder y volar
 public class Vampiro extends Monstruo implements Mordedor, Volador {
     private int velocidadDeVuelo;
     private int resistenciaAlSol;
@@ -12,13 +12,13 @@ public class Vampiro extends Monstruo implements Mordedor, Volador {
     }
 
     @Override
-    public String morder() { 
-        return "¡El vampiro clava sus colmillos!"; 
+    public String morder() {
+        return "¡El vampiro clava sus colmillos!";
     }
 
     @Override
-    public String volar() { 
-        return "¡El vampiro despliega sus alas y alza el vuelo!"; 
+    public String volar() {
+        return "¡El vampiro despliega sus alas y alza el vuelo!";
     }
 
     @Override

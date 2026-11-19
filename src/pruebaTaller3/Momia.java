@@ -1,6 +1,6 @@
 package pruebaTaller3;
 
-// Subclase Momia que hereda de Monstruo e implementa Regenerable y Furioso
+// Subclase Momia con habilidad de regenerarse y enfurecerse
 public class Momia extends Monstruo implements Regenerable, Furioso {
     private int longitudVendajes;
 
@@ -10,13 +10,13 @@ public class Momia extends Monstruo implements Regenerable, Furioso {
     }
 
     @Override
-    public String regenerarse() { 
-        return "¡La momia envuelve sus heridas con vendajes nuevos!"; 
+    public String regenerarse() {
+        return "¡La momia envuelve sus heridas con vendajes nuevos!";
     }
 
     @Override
-    public String enfurecerse() { 
-        return "¡La momia desata una maldición de furia ancestral!"; 
+    public String enfurecerse() {
+        return "¡La momia desata una maldicion de furia ancestral!";
     }
 
     @Override
