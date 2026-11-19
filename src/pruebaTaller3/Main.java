@@ -130,43 +130,31 @@ public class Main {
 
                     if (opcion == 1) {
                         menuMinijuegos(sistema, scanner);
-                    } else {
-                        if (opcion == 2) {
-                            verCatalogo(sistema);
-                        } else {
-                            if (opcion == 3) {
-                                verHistorial(sistema);
-                            } else {
-                                if (opcion == 4) {
-                                    verRanking(sistema);
-                                } else {
-                                    if (opcion == 5) {
-                                        System.out.println();
-                                        System.out.println(sistema.finalizarSesion());
-                                        if (sistema.haJugadoAlMenosUno()) {
-                                            guardarRegistros(sistema.getListaJugadores());
-                                            System.out.println("Registros guardados en Registros.txt.");
-                                        }
-                                        sesionActiva = false;
-                                    } else {
-                                        if (opcion == 6) {
-                                            System.out.println();
-                                            System.out.println(sistema.finalizarSesion());
-                                            if (sistema.haJugadoAlMenosUno()) {
-                                                guardarRegistros(sistema.getListaJugadores());
-                                                System.out.println("Registros guardados en Registros.txt.");
-                                            }
-                                            sesionActiva = false;
-                                            appActiva = false;
-                                        } else {
-                                            if (opcion != -1) {
-                                                System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                    } else if (opcion == 2) {
+                        verCatalogo(sistema);
+                    } else if (opcion == 3) { 
+                        verHistorial(sistema);
+                    } else if (opcion == 4) {  
+                        verRanking(sistema);
+                    } else if (opcion == 5) { 
+                        System.out.println();
+                        System.out.println(sistema.finalizarSesion());
+                        if (sistema.haJugadoAlMenosUno()) {
+                            guardarRegistros(sistema.getListaJugadores());
+                            System.out.println("Registros guardados en Registros.txt.");
                         }
+                            sesionActiva = false;
+                    } else if (opcion == 6) {
+                        System.out.println();
+                        System.out.println(sistema.finalizarSesion());
+                        if (sistema.haJugadoAlMenosUno()) {
+                            guardarRegistros(sistema.getListaJugadores());
+                            System.out.println("Registros guardados en Registros.txt.");
+                        }
+                            sesionActiva = false;
+                            appActiva = false;
+                    } else if (opcion != -1){  
+                        System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
                     }
                 }
             }
@@ -216,168 +204,150 @@ public class Main {
 
             if (opM == 0) {
                 enMenuJuegos = false;
-            } else {
-                if (opM >= 1 && opM <= 4) {
-                    int indexJuego = opM - 1;
-                    if (jugados[indexJuego]) {
-                        System.out.println("[!] Ya jugaste " + nombresMinijuegos[indexJuego] + " en esta sesion.");
-                    } else {
-                        // Busca monstruos que aun no se han usado en la sesion
-                        ArrayList<Monstruo> disponibles = new ArrayList<>();
-                        for (int i = 0; i < sistema.getCatalogoMonstruos().size(); i++) {
-                            Monstruo m = sistema.getCatalogoMonstruos().get(i);
-                            if (!m.isUsado()) {
-                                disponibles.add(m);
-                            }
+            } else if (opM >= 1 && opM <= 4) {
+                
+                int indexJuego = opM - 1;
+                if (jugados[indexJuego]) {
+                    System.out.println("[!] Ya jugaste " + nombresMinijuegos[indexJuego] + " en esta sesion.");
+                } else {
+                    // Busca monstruos que aun no se han usado en la sesion
+                    ArrayList<Monstruo> disponibles = new ArrayList<>();
+                    for (int i = 0; i < sistema.getCatalogoMonstruos().size(); i++) {
+                        Monstruo m = sistema.getCatalogoMonstruos().get(i);
+                        if (!m.isUsado()) {
+                            disponibles.add(m);
                         }
+                    }
 
-                        if (disponibles.size() == 0) {
-                            System.out.println("[!] No quedan monstruos disponibles en esta sesion.");
-                            enMenuJuegos = false;
-                        } else {
-                            boolean eligiendoMonstruo = true;
-                            while (eligiendoMonstruo) {
-                                System.out.println();
-                                System.out.println(nombresMinijuegos[indexJuego] + ": " + descripciones[indexJuego]);
-                                System.out.println();
-                                System.out.println("Elige el monstruo en el que te transformaras:");
-                                for (int i = 0; i < disponibles.size(); i++) {
-                                    System.out.print((i + 1) + ") ");
-                                    disponibles.get(i).mostrarAtributos();
+                    if (disponibles.size() == 0) {
+                        System.out.println("[!] No quedan monstruos disponibles en esta sesion.");
+                        enMenuJuegos = false;
+                    } else {
+                        boolean eligiendoMonstruo = true;
+                        while (eligiendoMonstruo) {
+                            System.out.println();
+                            System.out.println(nombresMinijuegos[indexJuego] + ": " + descripciones[indexJuego]);
+                            System.out.println();
+                            System.out.println("Elige el monstruo en el que te transformaras:");
+                            for (int i = 0; i < disponibles.size(); i++) {
+                                System.out.print((i + 1) + ") ");
+                                disponibles.get(i).mostrarAtributos();
+                            }
+                            System.out.println("0) Volver");
+                            System.out.print("> ");
+
+                            String opMonStr = scanner.nextLine();
+                            int opMon = -1;
+                            try {
+                                opMon = Integer.parseInt(opMonStr);
+                            } catch (NumberFormatException e) {
+                                System.out.println("[!] Debe ingresar un numero. Intente nuevamente.");
+                            }
+
+                            if (opMon == 0) {
+                                eligiendoMonstruo = false;
+                            } else if (opMon >= 1 && opMon <= disponibles.size()) {
+                                Monstruo elegido = disponibles.get(opMon - 1);
+
+                                // Calcula el potencial segun el minijuego elegido
+                                double potencial = 0.0;
+                                if (indexJuego == 0) {
+                                    potencial = elegido.calcularPotencialCarrera();
+                                } else  if (indexJuego == 1) {
+                                    potencial = elegido.calcularPotencialCalabazas();
+                                } else if (indexJuego == 2) {
+                                    potencial = elegido.calcularPotencialLapidas();
+                                } else if (indexJuego == 3) {  
+                                    potencial = elegido.calcularPotencialAmanecer();
                                 }
-                                System.out.println("0) Volver");
-                                System.out.print("> ");
+                                
+                                System.out.println();
+                                System.out.println("Te comes un dulce de dudosa procedencia...");
 
-                                String opMonStr = scanner.nextLine();
-                                int opMon = -1;
-                                try {
-                                    opMon = Integer.parseInt(opMonStr);
-                                } catch (NumberFormatException e) {
-                                    System.out.println("[!] Debe ingresar un numero. Intente nuevamente.");
+                                double potencialRedondeado = Math.round(potencial * 100.0) / 100.0;
+                                System.out.println("Potencial para " + nombresMinijuegos[indexJuego] + ": " + potencialRedondeado);
+
+                                // Revisa que habilidades tiene el monstruo elegido
+                                ArrayList<String> nombresHabs = new ArrayList<>();
+                                if (elegido instanceof Mordedor) {
+                                    nombresHabs.add("Morder");
+                                }
+                                if (elegido instanceof Volador) {
+                                    nombresHabs.add("Volar");
+                                }
+                                if (elegido instanceof Regenerable) {
+                                    nombresHabs.add("Regenerarse");
+                                }
+                                if (elegido instanceof Furioso) {
+                                    nombresHabs.add("Enfurecerse");
                                 }
 
-                                if (opMon == 0) {
-                                    eligiendoMonstruo = false;
-                                } else {
-                                    if (opMon >= 1 && opMon <= disponibles.size()) {
-                                        Monstruo elegido = disponibles.get(opMon - 1);
+                                boolean eligiendoHabilidad = true;
+                                while (eligiendoHabilidad) {
+                                    System.out.println();
+                                    System.out.println("¿Quieres usar una habilidad?");
+                                    for (int i = 0; i < nombresHabs.size(); i++) {
+                                        System.out.println((i + 1) + ") " + nombresHabs.get(i));
+                                    }
+                                    System.out.println("0) No usar habilidad");
+                                    System.out.print("> ");
 
-                                        // Calcula el potencial segun el minijuego elegido
-                                        double potencial = 0.0;
-                                        if (indexJuego == 0) {
-                                            potencial = elegido.calcularPotencialCarrera();
-                                        } else {
-                                            if (indexJuego == 1) {
-                                                potencial = elegido.calcularPotencialCalabazas();
+                                    String habStr = scanner.nextLine();
+                                    int opHab = -1;
+                                    try {
+                                        opHab = Integer.parseInt(habStr);
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("[!] Debe ingresar un numero. Intente nuevamente.");
+                                    }
+
+                                    if (opHab >= 0 && opHab <= nombresHabs.size()) {
+                                        String habilidadUsadaNombre = "Ninguna";
+                                        if (opHab > 0) {
+                                            habilidadUsadaNombre = nombresHabs.get(opHab - 1);
+
+                                            if (habilidadUsadaNombre.equals("Morder")) {
+                                                System.out.println(((Mordedor) elegido).morder());
+                                            } else if (habilidadUsadaNombre.equals("Volar")){
+                                                System.out.println(((Volador) elegido).volar());
+                                            } else if (habilidadUsadaNombre.equals("Enfurecerse")) { 
+                                                System.out.println(((Regenerable) elegido).regenerarse());
+                                            } else if (habilidadUsadaNombre.equals("Enfurecerse")) {  
+                                                System.out.println(((Furioso) elegido).enfurecerse());
+                                            }
+                                                
+
+
+                                            if (habilidadUsadaNombre.equals(habilidadesPremiadas[indexJuego])) {
+                                                System.out.println("¡La habilidad fue efectiva! Puntaje x1.5");
                                             } else {
-                                                if (indexJuego == 2) {
-                                                    potencial = elegido.calcularPotencialLapidas();
-                                                } else {
-                                                    if (indexJuego == 3) {
-                                                        potencial = elegido.calcularPotencialAmanecer();
-                                                    }
-                                                }
+                                                System.out.println("La habilidad no tuvo efecto en este minijuego.");
                                             }
                                         }
+
+                                        int puntajeFinal = sistema.calcularYRegistrarPuntaje(
+                                            indexJuego, elegido, habilidadUsadaNombre,
+                                            habilidadesPremiadas[indexJuego], nombresMinijuegos[indexJuego], potencial
+                                        );
 
                                         System.out.println();
-                                        System.out.println("Te comes un dulce de dudosa procedencia...");
-
-                                        double potencialRedondeado = Math.round(potencial * 100.0) / 100.0;
-                                        System.out.println("Potencial para " + nombresMinijuegos[indexJuego] + ": " + potencialRedondeado);
-
-                                        // Revisa que habilidades tiene el monstruo elegido
-                                        ArrayList<String> nombresHabs = new ArrayList<>();
-                                        if (elegido instanceof Mordedor) {
-                                            nombresHabs.add("Morder");
-                                        }
-                                        if (elegido instanceof Volador) {
-                                            nombresHabs.add("Volar");
-                                        }
-                                        if (elegido instanceof Regenerable) {
-                                            nombresHabs.add("Regenerarse");
-                                        }
-                                        if (elegido instanceof Furioso) {
-                                            nombresHabs.add("Enfurecerse");
-                                        }
-
-                                        boolean eligiendoHabilidad = true;
-                                        while (eligiendoHabilidad) {
-                                            System.out.println();
-                                            System.out.println("¿Quieres usar una habilidad?");
-                                            for (int i = 0; i < nombresHabs.size(); i++) {
-                                                System.out.println((i + 1) + ") " + nombresHabs.get(i));
-                                            }
-                                            System.out.println("0) No usar habilidad");
-                                            System.out.print("> ");
-
-                                            String habStr = scanner.nextLine();
-                                            int opHab = -1;
-                                            try {
-                                                opHab = Integer.parseInt(habStr);
-                                            } catch (NumberFormatException e) {
-                                                System.out.println("[!] Debe ingresar un numero. Intente nuevamente.");
-                                            }
-
-                                            if (opHab >= 0 && opHab <= nombresHabs.size()) {
-                                                String habilidadUsadaNombre = "Ninguna";
-                                                if (opHab > 0) {
-                                                    habilidadUsadaNombre = nombresHabs.get(opHab - 1);
-
-                                                    if (habilidadUsadaNombre.equals("Morder")) {
-                                                        System.out.println(((Mordedor) elegido).morder());
-                                                    } else {
-                                                        if (habilidadUsadaNombre.equals("Volar")) {
-                                                            System.out.println(((Volador) elegido).volar());
-                                                        } else {
-                                                            if (habilidadUsadaNombre.equals("Regenerarse")) {
-                                                                System.out.println(((Regenerable) elegido).regenerarse());
-                                                            } else {
-                                                                if (habilidadUsadaNombre.equals("Enfurecerse")) {
-                                                                    System.out.println(((Furioso) elegido).enfurecerse());
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-
-                                                    if (habilidadUsadaNombre.equals(habilidadesPremiadas[indexJuego])) {
-                                                        System.out.println("¡La habilidad fue efectiva! Puntaje x1.5");
-                                                    } else {
-                                                        System.out.println("La habilidad no tuvo efecto en este minijuego.");
-                                                    }
-                                                }
-
-                                                int puntajeFinal = sistema.calcularYRegistrarPuntaje(
-                                                    indexJuego, elegido, habilidadUsadaNombre,
-                                                    habilidadesPremiadas[indexJuego], nombresMinijuegos[indexJuego], potencial
-                                                );
-
-                                                System.out.println();
-                                                System.out.println(">> Puntaje obtenido: " + puntajeFinal + " puntos");
-                                                eligiendoHabilidad = false;
-                                                eligiendoMonstruo = false;
-                                                enMenuJuegos = false;
-                                            } else {
-                                                if (opHab != -1) {
-                                                    System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        if (opMon != -1) {
-                                            System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
-                                        }
+                                        System.out.println(">> Puntaje obtenido: " + puntajeFinal + " puntos");
+                                        eligiendoHabilidad = false;
+                                        eligiendoMonstruo = false;
+                                        enMenuJuegos = false;
+                                    } else if (opHab != -1) {
+                                        System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
                                     }
+                                    
                                 }
-                            }
+                            } else if (opMon != -1) {                                        
+                                System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
+                            }     
                         }
                     }
-                } else {
-                    if (opM != -1) {
-                        System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
-                    }
                 }
-            }
+            } else if (opM != -1) {
+                System.out.println("[!] Opcion fuera de rango. Intente nuevamente.");
+            } 
         }
     }
 
